@@ -1,4 +1,5 @@
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>La Messa Bassa</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="La Messa Bassa, trattoria nel borgo di Pisoniano (RM). Cucina di una volta, menù scritto a mano e carta dei vini. Via del Castello 28.">
@@ -104,14 +105,27 @@ a{color:var(--brace)}
   font-size:.7rem;letter-spacing:.14em;color:var(--fumo);font-variant-numeric:tabular-nums}
 
 /* ---------- MENÙ ---------- */
-.menu{position:absolute;inset:0;z-index:4;display:grid;place-items:center;perspective:2200px;pointer-events:none;visibility:hidden}
+.menu{position:absolute;inset:0;z-index:4;display:grid;place-items:center;perspective:2200px;pointer-events:none;visibility:hidden;
+  /* fascia alta per titolo + linguette, fascia bassa per il percorso: il libro sta nello spazio che resta */
+  --alto:calc(212px + 3vh + env(safe-area-inset-top,0px));--basso:calc(84px + env(safe-area-inset-bottom,0px));
+  padding-top:var(--alto);padding-bottom:var(--basso);box-sizing:border-box}
 .menu .velo{position:absolute;inset:0;background:radial-gradient(70% 70% at 50% 55%,rgba(20,14,10,.2),rgba(20,14,10,.8));opacity:0}
 .menu .piatto3d model-viewer{pointer-events:auto}
+.menu-nav{position:absolute;z-index:6;top:calc(150px + 3vh + env(safe-area-inset-top,0px));left:0;right:0;
+  display:flex;justify-content:center;align-items:center;gap:.4rem;flex-wrap:wrap;padding-inline:16px;pointer-events:auto}
+.menu-nav button{font:inherit;cursor:pointer;color:var(--intonaco);background:rgba(20,14,10,.55);border:1px solid rgba(233,179,106,.35);
+  border-radius:2px;padding:.5rem .85rem;font-size:.74rem;letter-spacing:.12em;text-transform:uppercase;transition:background .25s,color .25s,border-color .25s}
+.menu-nav button:hover{border-color:var(--brace);color:var(--brace)}
+.menu-nav .linguetta[aria-current="true"]{background:var(--brace);color:var(--notte);border-color:var(--brace)}
+.menu-nav .freccia{font-size:1.1rem;line-height:1;padding:.42rem .75rem;letter-spacing:0}
+.menu-nav .freccia:disabled{opacity:.35;cursor:default}
+.libro{pointer-events:auto;cursor:pointer}
+
 .menu-titolo{position:absolute;z-index:2;top:calc(78px + 2vh + env(safe-area-inset-top,0px));left:0;right:0;text-align:center;
   font-family:var(--f-display);font-size:clamp(1.6rem,3vw,2.6rem);padding-inline:16px}
 .menu-titolo small{display:block;font-family:var(--f-body);font-size:.75rem;letter-spacing:.22em;text-transform:uppercase;color:var(--brace);margin-bottom:.4rem}
 
-.libro{position:relative;z-index:2;--w:min(30vw,340px);--h:calc(var(--w)*1.38);
+.libro{position:relative;z-index:2;--w:min(30vw,340px,calc((100svh - 212px - 3vh - 84px - 24px) / 1.5));--h:calc(var(--w)*1.38);
   width:calc(var(--w)*2);height:var(--h);transform-style:preserve-3d;transform:rotateX(18deg)}
 .foglio,.base{position:absolute;top:0;left:50%;width:var(--w);height:var(--h);transform-style:preserve-3d;transform-origin:left center}
 .faccia{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:2px 6px 6px 2px;overflow:hidden}
@@ -134,10 +148,33 @@ a{color:var(--brace)}
 .cordino{position:absolute;z-index:3;left:calc(50% - 2px);top:-4%;width:4px;height:112%;border-radius:2px;
   background:linear-gradient(90deg,#5e0f1a,var(--cordino),#5e0f1a);transform:translateZ(2px)}
 
+/* pagine vere del menù (foto raddrizzate) su desktop; il testo resta per Google e lettori di schermo */
+.libro .carta{background:var(--carta) center/100% 100% no-repeat;padding:0}
+.libro .carta > *{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;margin:0}
+#f2 > .faccia:not(.retro) .carta{background-image:url(menu-pagine/p1.webp)}
+#f2 .retro .carta{background-image:url(menu-pagine/p2.webp)}
+#f3 > .faccia:not(.retro) .carta{background-image:url(menu-pagine/p3.webp)}
+#f3 .retro .carta{background-image:url(menu-pagine/p4.webp)}
+/* pelle vera (foto) + grana + lucentezza; ogni pagina è montata in una cornice di pelle cucita, come il menù reale */
+.libro{--grana:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .2 0 0 0 0 .12 0 0 0 0 .08 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  --pelle:radial-gradient(130% 90% at 25% 15%,rgba(255,220,180,.16),transparent 55%),
+          linear-gradient(160deg,rgba(255,225,190,.06),rgba(0,0,0,.32)),var(--grana),url(menu-pagine/pelle.webp) center/cover}
+.cuoio,.foglio .faccia,.base .faccia{background:var(--pelle);background-color:#4b3029}
+.foglio .faccia::before,.base .faccia::before{content:"";position:absolute;inset:7px;border:1px dashed rgba(255,214,170,.32);border-radius:3px;pointer-events:none;z-index:1}
+.cuoio{box-shadow:inset 0 0 0 1px rgba(0,0,0,.4),inset 0 0 30px rgba(0,0,0,.45),0 18px 40px rgba(0,0,0,.5)}
+.cuoio::after{display:none}
+.foglio .faccia,.base .faccia{box-shadow:inset 0 0 18px rgba(0,0,0,.45),0 14px 34px rgba(0,0,0,.45)}
+.libro .carta{margin:0;inset:5% 6%;box-shadow:0 1px 2px rgba(0,0,0,.35),0 0 0 1px rgba(60,40,20,.2);z-index:2}
+.camoscio{background:linear-gradient(160deg,rgba(255,225,190,.06),rgba(0,0,0,.2)),url(menu-pagine/camoscio.webp) center/cover!important;inset:5% 6%!important;
+  position:absolute;border-radius:2px;box-shadow:inset 0 0 14px rgba(0,0,0,.35)}
+.tasca{background:linear-gradient(170deg,rgba(255,225,190,.1),rgba(0,0,0,.35)),var(--grana),url(menu-pagine/pelle.webp) center/cover;
+  border-top:1px dashed rgba(255,214,170,.3);z-index:2}
+
 /* piatti 3D: appoggiati sul marmo a destra del libro, stessa prospettiva e luce calda */
 .menu.con-piatti .libro{margin-right:calc(var(--w) * .9)}
-.piatto3d{position:absolute;z-index:4;left:calc(50% + var(--wl) * .55);top:52%;width:min(30vw,380px);aspect-ratio:1;
-  transform:translateY(-50%);pointer-events:none;--wl:min(30vw,340px)}
+.piatto3d{position:absolute;z-index:4;--wl:min(30vw,340px,calc((100svh - 212px - 3vh - 84px - 24px) / 1.5));
+  left:calc(50% + var(--wl) * .55);top:calc(var(--alto) + (100% - var(--alto) - var(--basso)) / 2);width:min(30vw,380px,calc(var(--wl) * 1.15));aspect-ratio:1;
+  transform:translateY(-50%);pointer-events:none}
 .piatto3d::before{ /* ombra di contatto sul marmo */
   content:"";position:absolute;left:14%;right:14%;bottom:20%;height:16%;border-radius:50%;
   background:radial-gradient(closest-side,rgba(20,10,5,.55),rgba(20,10,5,0));filter:blur(6px)}
@@ -147,6 +184,33 @@ a{color:var(--brace)}
 .piatto3d .nome{position:absolute;left:0;right:0;bottom:4%;text-align:center;font-family:var(--f-mano);font-size:1.05rem;color:var(--intonaco);
   text-shadow:0 2px 10px rgba(0,0,0,.7)}
 .carta li.acceso span:first-child{background:linear-gradient(transparent 62%,rgba(233,179,106,.45) 62%)}
+
+/* ---------- CHI SIAMO + LE SALE ---------- */
+.sez{padding-block:clamp(64px,12vh,120px);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));background:var(--notte)}
+.sez + .sez{padding-top:0}
+.sez-in{max-width:68rem;margin:0 auto}
+.sez h2{font-family:var(--f-display);font-weight:400;font-size:clamp(2.2rem,4.4vw,3.6rem);line-height:1.05;margin:.5rem 0 1.2rem;text-wrap:balance}
+.sez .occhiello{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--brace);font-weight:600}
+.chi-in{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:clamp(28px,6vw,80px);align-items:center}
+.chi-foto{margin:0}
+.chi-foto img{display:block;width:100%;height:auto;aspect-ratio:9/14;object-fit:cover;object-position:50% 20%;border-radius:2px;box-shadow:0 24px 60px rgba(0,0,0,.5)}
+.chi-testo{display:grid;gap:1rem;min-width:0}
+.chi-testo p{margin:0;color:var(--fumo);font-size:1.08rem;max-width:38rem}
+.galleria{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:clamp(160px,22vw,280px);gap:10px}
+.galleria li{min-width:0}
+.galleria li.larga{grid-column:span 2}
+.galleria button{display:block;width:100%;height:100%;padding:0;border:0;background:#1b130e;cursor:zoom-in;overflow:hidden;border-radius:2px}
+.galleria img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s ease}
+.galleria button:hover img{transform:scale(1.04)}
+.lente{border:0;padding:0;background:transparent;max-width:min(92vw,1400px);max-height:90vh}
+.lente::backdrop{background:rgba(8,5,3,.88)}
+.lente img{display:block;max-width:100%;max-height:86vh;object-fit:contain}
+.chiudi-lente{position:fixed;top:calc(16px + env(safe-area-inset-top,0px));right:max(16px,env(safe-area-inset-right,0px));font:inherit;background:var(--brace);color:var(--notte);border:0;border-radius:2px;padding:.6rem 1rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:.78rem}
+@media (max-width:760px){
+  .chi-in{grid-template-columns:1fr}
+  .chi-foto img{aspect-ratio:4/3;object-position:50% 25%}
+  .galleria{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:42vw}
+}
 
 /* ---------- DOVE SIAMO + FOOTER ---------- */
 .dove{padding-block:clamp(64px,12vh,120px);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));background:var(--notte)}
@@ -172,18 +236,86 @@ a{color:var(--brace)}
 .piede a:hover{color:var(--brace)}
 @media (max-width:760px){ .dove-in{grid-template-columns:1fr} }
 
+/* ---------- ELEMENTI SOLO TELEFONO (nascosti su desktop) ---------- */
+.barra-m,.menu-m,.tappa-ora,.salta-video,.passo-m{display:none}
+.foglio3d{position:fixed;z-index:40;left:0;right:0;bottom:0;height:min(64vh,560px);background:var(--notte);
+  border-top:1px solid rgba(233,179,106,.35);border-radius:14px 14px 0 0;transform:translateY(105%);transition:transform .35s ease;
+  display:grid;grid-template-rows:auto 1fr;padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px))}
+.foglio3d.aperto{transform:none}
+.foglio3d header{display:flex;justify-content:space-between;align-items:center;gap:1rem}
+.foglio3d h3{font-family:var(--f-mano);font-weight:400;font-size:1.3rem;margin:0}
+.foglio3d button{font:inherit;background:none;border:1px solid rgba(243,234,217,.35);color:var(--intonaco);border-radius:2px;padding:.55rem .9rem;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase}
+.foglio3d model-viewer{width:100%;height:100%;background:transparent;--poster-color:transparent}
+.foglio3d model-viewer::part(default-progress-bar){display:none}
+.sfondo3d{position:fixed;inset:0;z-index:39;background:rgba(0,0,0,.55);opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s}
+.sfondo3d.aperto{opacity:1;visibility:visible}
+
 /* ---------- TELEFONO ---------- */
 @media (max-width:760px){
-  .copy{width:auto;left:16px!important;right:16px!important;top:auto;bottom:calc(92px + env(safe-area-inset-bottom,0px));transform:none;text-align:left!important}
-  .film::after{background:linear-gradient(0deg,rgba(10,6,4,.85) 0%,rgba(10,6,4,.2) 55%,transparent 75%)}
-  .percorso{gap:.5rem;font-size:.58rem;letter-spacing:.08em}
-  .percorso{gap:.15rem}
-  .percorso button{padding:.7rem .3rem}
-  .percorso button{gap:.3rem}
-  .scorri{display:none}
-  .libro{--w:min(44vw,220px)}
-  .menu.con-piatti .libro{margin-right:0;transform:rotateX(18deg) translateY(-12vh)}
-  .piatto3d{left:50%;top:auto;bottom:calc(2vh + env(safe-area-inset-bottom,0px));transform:translateX(-50%);width:min(62vw,280px)}
+  body{font-size:17px}
+  /* in alto solo il nome + scorciatoia al menù; la navigazione va nella barra in basso */
+  .salta-video{display:none!important}
+  .salta-video-x{display:inline-block;font-size:.78rem;letter-spacing:.08em;color:var(--intonaco);text-decoration:none;
+    border:1px solid rgba(243,234,217,.4);border-radius:999px;padding:.45rem .85rem;background:rgba(20,14,10,.45)}
+  .barra{background:linear-gradient(rgba(14,9,6,.55),rgba(14,9,6,0))}
+  .barra-m{display:grid;grid-template-columns:repeat(3,1fr);position:fixed;z-index:30;left:0;right:0;bottom:0;
+    background:rgba(20,14,10,.96);border-top:1px solid rgba(233,179,106,.25);
+    padding:0 env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
+  .barra-m a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.25rem;min-height:62px;
+    color:var(--intonaco);text-decoration:none;font-size:.78rem;letter-spacing:.06em;font-weight:500}
+  .barra-m a:first-child{color:var(--brace)}
+  .barra-m svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.6}
+  /* testi degli shot: solo il titolo, grande, su un fondo più scuro */
+  .copy{width:auto;left:16px!important;right:16px!important;top:auto;bottom:calc(150px + env(safe-area-inset-bottom,0px));transform:none;text-align:left!important;gap:.35rem}
+  .copy p{display:none}
+  .copy .tappa{font-size:.8rem;letter-spacing:.16em}
+  .copy h2{font-size:clamp(2.2rem,10vw,2.9rem);line-height:1.05}
+  .film::after{background:linear-gradient(0deg,rgba(10,6,4,.92) 0%,rgba(10,6,4,.55) 28%,transparent 52%)}
+  /* percorso: pallini grandi + nome della tappa corrente */
+  .percorso{bottom:calc(74px + env(safe-area-inset-bottom,0px));gap:.35rem}
+  .percorso button{padding:.75rem .55rem}
+  .percorso button span{display:none}
+  .percorso button::before{width:11px;height:11px}
+  .tappa-ora{display:block;position:absolute;z-index:5;left:0;right:0;bottom:calc(118px + env(safe-area-inset-bottom,0px));text-align:center;
+    font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--brace)}
+  .scorri,.carica{display:none}
+  /* tasti grandi per avanzare/tornare di una tappa */
+  .passo-m{display:grid;place-items:center;position:absolute;z-index:6;bottom:calc(80px + env(safe-area-inset-bottom,0px));
+    width:52px;height:52px;border-radius:50%;border:1px solid rgba(233,179,106,.6);background:rgba(20,14,10,.7);
+    color:var(--brace);font:inherit;font-size:1.7rem;line-height:1;padding:0 0 3px;cursor:pointer}
+  #passo-indietro{left:max(14px,env(safe-area-inset-left,0px))}
+  #passo-avanti{right:max(14px,env(safe-area-inset-right,0px));background:var(--brace);color:var(--notte);border-color:var(--brace)}
+  .passo-m:disabled{opacity:.3}
+  .tappa-ora{font-size:.8rem}
+  /* menù: una pagina per volta, a tutta larghezza, da sfogliare col dito */
+  .libro,.menu-nav,.piatto3d{display:none!important}
+  .menu-titolo{top:calc(70px + env(safe-area-inset-top,0px));font-size:1.45rem}
+  .menu-titolo small{font-size:.7rem}
+  .menu-m{display:grid;grid-template-rows:auto 1fr;gap:10px;position:absolute;z-index:6;left:0;right:0;
+    top:calc(130px + env(safe-area-inset-top,0px));bottom:calc(146px + env(safe-area-inset-bottom,0px));pointer-events:auto}
+  .menu-m .schede-m{display:flex;gap:.4rem;overflow-x:auto;padding-inline:16px;scrollbar-width:none}
+  .menu-m .schede-m button{flex:0 0 auto;font:inherit;font-size:.8rem;letter-spacing:.06em;color:var(--intonaco);background:rgba(20,14,10,.6);
+    border:1px solid rgba(233,179,106,.4);border-radius:999px;padding:.6rem .95rem}
+  .menu-m .schede-m button[aria-current="true"]{background:var(--brace);color:var(--notte);border-color:var(--brace)}
+  .menu-m .pagine{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding-inline:16px;scrollbar-width:none;overscroll-behavior-x:contain}
+  .menu-m .pagine::-webkit-scrollbar,.menu-m .schede-m::-webkit-scrollbar{display:none}
+  .pagina{flex:0 0 100%;scroll-snap-align:center;background:var(--carta);color:var(--inchiostro);border-radius:3px;
+    background-image:radial-gradient(rgba(120,100,40,.08) 1px,transparent 1px);background-size:4px 4px;
+    box-shadow:0 10px 30px rgba(0,0,0,.45);padding:22px 20px;overflow-y:auto;overscroll-behavior:contain;
+    font-family:var(--f-mano);font-weight:400;font-size:1.08rem;line-height:1.5}
+  .pagina h4{font-family:var(--f-mano);font-weight:400;font-size:1.05rem;text-transform:uppercase;letter-spacing:.06em;margin:.2em 0 .45em;color:#5a3b1c}
+  .pagina h4:not(:first-child){margin-top:1.1em}
+  .pagina ul{list-style:none;margin:0;padding:0;display:grid;gap:.55em}
+  .pagina li{display:flex;justify-content:space-between;gap:.8em}
+  .pagina li span:last-child{white-space:nowrap}
+  .pagina p{margin:.6em 0 0}
+  .pagina li[data-dish]{cursor:pointer}
+  .pagina li[data-dish] span:first-child::after{content:"3D";font-family:var(--f-body);font-size:.62rem;font-weight:600;letter-spacing:.08em;
+    margin-left:.45em;padding:.12em .4em;border-radius:3px;background:var(--inchiostro);color:var(--carta);vertical-align:.25em}
+  .pagina .suggerimento{font-family:var(--f-body);font-size:.78rem;color:#6b5a3e;margin-top:1.2em}
+  .dove{padding-bottom:calc(64px + 76px)}
+  .piede{padding-bottom:calc(28px + 76px + env(safe-area-inset-bottom,0px))}
+  .azioni .btn{flex:1 1 100%}
 }
 @media (prefers-reduced-motion:reduce){ .percorso button,.percorso button::before{transition:none} }
 </style>
@@ -191,10 +323,13 @@ a{color:var(--brace)}
 <a class="salta" href="#menu">Vai al menù</a>
 <header class="barra" id="barra">
   <a class="marchio" href="#film" data-vai="film">La Messa <em>Bassa</em></a>
+  <a class="salta-video" href="#menu" data-vai="menu">Vai al menù →</a>
   <nav aria-label="Principale">
     <ul class="voci" id="voci">
       <li><a href="#film" data-vai="film">Il locale</a></li>
       <li><a href="#menu" data-vai="menu">Menù</a></li>
+      <li><a href="#chi-siamo" data-vai="chi-siamo">Chi siamo</a></li>
+      <li><a href="#sale" data-vai="sale">Le sale</a></li>
       <li><a href="#dove" data-vai="dove">Dove siamo</a></li>
       <li><a class="chiama" href="tel:+393204052810">Chiama 320 405 2810</a></li>
     </ul>
@@ -207,7 +342,7 @@ a{color:var(--brace)}
 <section class="film" id="film" aria-label="Entra nella trattoria">
   <canvas id="seq" role="img" aria-label="Dal vicolo di Pisoniano, il portone de La Messa Bassa si apre sulla sala con il camino, poi si salgono gli scalini fino al tavolo di marmo"></canvas>
 
-  <div class="copy" data-shot="0" data-side="left">
+  <div class="copy" data-shot="0" data-side="right">
     <span class="tappa">Pisoniano · Via del Castello</span>
     <h2>La Messa Bassa</h2>
     <p>Trattoria nel borgo di Pisoniano</p>
@@ -233,6 +368,9 @@ a{color:var(--brace)}
     <p>Ecco il menù</p>
   </div>
 
+  <div class="tappa-ora" id="tappa-ora" aria-live="polite">Vicolo</div>
+  <button type="button" class="passo-m" id="passo-indietro" aria-label="Tappa precedente" disabled>‹</button>
+  <button type="button" class="passo-m" id="passo-avanti" aria-label="Tappa successiva">›</button>
   <ol class="percorso" aria-label="Percorso nel locale">
     <li data-shot="0"><button type="button" data-shot="0"><span>Vicolo</span></button></li>
     <li data-shot="1"><button type="button" data-shot="1"><span>Sala</span></button></li>
@@ -247,6 +385,13 @@ a{color:var(--brace)}
   <div class="menu" id="menu" role="region" aria-label="Il menù">
   <div class="velo" aria-hidden="true"></div>
   <div class="menu-titolo"><small>Il menù scritto a mano</small>Menù La Messa Bassa</div>
+  <nav class="menu-nav" aria-label="Pagine del menù">
+    <button type="button" class="freccia" data-dir="-1" aria-label="Pagina precedente">‹</button>
+    <button type="button" class="linguetta" data-spread="1">Antipasti e primi</button>
+    <button type="button" class="linguetta" data-spread="2">Secondi, dolci e vini</button>
+    <button type="button" class="linguetta" data-spread="3">Rossi e cantina</button>
+    <button type="button" class="freccia" data-dir="1" aria-label="Pagina successiva">›</button>
+  </nav>
 
   <div class="libro" id="libro">
     <!-- base destra: tasca in pelle (ultima apertura) -->
@@ -321,19 +466,61 @@ a{color:var(--brace)}
     <!-- foglio 1: copertina (fronte) / interno in camoscio (retro) -->
     <div class="foglio" id="f1">
       <div class="faccia cuoio"></div>
-      <div class="faccia retro camoscio"></div>
+      <div class="faccia retro"><div class="camoscio"></div></div>
     </div>
 
     <div class="cordino" aria-hidden="true"></div>
   </div>
 
   <div class="piatto3d" id="piatto3d" hidden></div>
+
+  <!-- telefono: una pagina per volta, schede + swipe (riempito dallo script con le righe del libro) -->
+  <div class="menu-m" id="menu-m">
+    <div class="schede-m" role="tablist" aria-label="Sezioni del menù"></div>
+    <div class="pagine" id="pagine"></div>
+  </div>
 </div>
 </section>
 
 
 
-<!-- 3. DOVE SIAMO --------------------------------------------------------- -->
+<!-- 3. CHI SIAMO ---------------------------------------------------------- -->
+<section class="sez chi" id="chi-siamo" aria-labelledby="chi-t">
+  <div class="sez-in chi-in">
+    <figure class="chi-foto"><img src="foto/insegna_s.webp" alt="L'insegna in legno de La Messa Bassa sopra il portone, in Via del Castello" loading="lazy" width="405" height="720"></figure>
+    <div class="chi-testo">
+      <span class="occhiello">Chi siamo</span>
+      <h2 id="chi-t">Una trattoria nel borgo di Pisoniano</h2>
+      <!-- BOZZA: testo scritto solo con fatti noti (foto, menù, Google Maps). Da far approvare e completare al cliente con storia, titolari, nome del locale. -->
+      <p>La Messa Bassa è in Via del Castello, tra i vicoli del centro storico. Dentro ci sono due sale: quella del camino, con le tavolate in legno e il bancone, e la saletta rialzata che si raggiunge salendo cinque gradini di pietra sotto l'arco.</p>
+      <p>Il menù è scritto a mano: piatti della tradizione come le sagne co' ghiù baccalà, il castrato in umido e la ciambella di San Biagio con ricotta, cannella e miele. In cantina, vini di Damiano Ciolli, Di Marzio e Il Moro accanto a qualche grande annata.</p>
+      <div class="azioni">
+        <a class="btn btn-pieno" href="#menu" data-vai="menu">Sfoglia il menù</a>
+        <a class="btn btn-vuoto" href="https://www.google.com/maps/search/?api=1&amp;query=La+Messa+Bassa+Pisoniano" target="_blank" rel="noopener">Leggi le recensioni su Google</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. LE SALE (foto reali del locale) -------------------------------------- -->
+<section class="sez sale" id="sale" aria-labelledby="sale-t">
+  <div class="sez-in">
+    <span class="occhiello">Le sale</span>
+    <h2 id="sale-t">Dal vicolo al tavolo di marmo</h2>
+    <ul class="galleria">
+      <li class="larga"><button type="button" data-big="foto/sala-camino.webp"><img src="foto/sala-camino_s.webp" alt="La sala del camino con le tavolate in legno e il bancone" loading="lazy" width="720" height="405"></button></li>
+      <li><button type="button" data-big="foto/camino.webp"><img src="foto/camino_s.webp" alt="Il camino in pietra con la mensola in legno" loading="lazy" width="405" height="720"></button></li>
+      <li><button type="button" data-big="foto/vicolo.webp"><img src="foto/vicolo_s.webp" alt="I tavoli fuori, nel vicolo di Via del Castello" loading="lazy" width="405" height="720"></button></li>
+      <li class="larga"><button type="button" data-big="foto/sala-alta.webp"><img src="foto/sala-alta_s.webp" alt="La saletta rialzata con la vetrina dei vini e la porta verde sul balcone" loading="lazy" width="720" height="405"></button></li>
+      <li><button type="button" data-big="foto/tavolo-marmo.webp"><img src="foto/tavolo-marmo_s.webp" alt="Il tavolo con il piano in marmo nella saletta" loading="lazy" width="405" height="720"></button></li>
+      <li><button type="button" data-big="foto/credenza.webp"><img src="foto/credenza_s.webp" alt="La credenza in legno e la cantinetta dei vini" loading="lazy" width="405" height="720"></button></li>
+      <li><button type="button" data-big="foto/balcone.webp"><img src="foto/balcone_s.webp" alt="La vista sui tetti del borgo dal balcone" loading="lazy" width="405" height="720"></button></li>
+    </ul>
+  </div>
+  <dialog class="lente" id="lente"><img alt=""><button type="button" class="chiudi-lente" aria-label="Chiudi foto">Chiudi</button></dialog>
+</section>
+
+<!-- 5. DOVE SIAMO --------------------------------------------------------- -->
 <section class="dove" id="dove" aria-labelledby="dove-t">
   <div class="dove-in">
     <div>
@@ -361,9 +548,26 @@ a{color:var(--brace)}
   <nav aria-label="Secondaria">
     <a href="#film" data-vai="film">Il locale</a>
     <a href="#menu" data-vai="menu">Menù</a>
+    <a href="#chi-siamo" data-vai="chi-siamo">Chi siamo</a>
+    <a href="#sale" data-vai="sale">Le sale</a>
     <a href="#dove" data-vai="dove">Dove siamo</a>
+    <a href="https://www.google.com/maps/search/?api=1&amp;query=La+Messa+Bassa+Pisoniano" target="_blank" rel="noopener">Recensioni su Google</a>
   </nav>
 </footer>
+
+<!-- telefono: barra fissa con le tre azioni principali -->
+<nav class="barra-m" aria-label="Azioni rapide">
+  <a href="tel:+393204052810"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h4l2 5-2.5 1.5a11 11 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A17 17 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>Chiama</a>
+  <a href="#menu" data-vai="menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5c3-1 5-1 8 1v14c-3-2-5-2-8-1zM20 5c-3-1-5-1-8 1v14c3-2 5-2 8-1z"/></svg>Menù</a>
+  <a href="https://www.google.com/maps/dir/?api=1&amp;destination=La+Messa+Bassa+Via+del+Castello+28+Pisoniano" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Indicazioni</a>
+</nav>
+
+<!-- telefono: il piatto 3D si apre dal basso quando si tocca la sua riga -->
+<div class="sfondo3d" id="sfondo3d"></div>
+<section class="foglio3d" id="foglio3d" role="dialog" aria-modal="true" aria-labelledby="foglio3d-t" aria-hidden="true">
+  <header><h3 id="foglio3d-t">Piatto</h3><button type="button" id="chiudi3d">Chiudi</button></header>
+  <div id="vista3d"></div>
+</section>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
@@ -375,7 +579,8 @@ gsap.registerPlugin(ScrollTrigger);
    Lo scroll non "riproduce" un video: sceglie quale frame disegnare. */
 const FRAMES = 242;
 const SHOTS = 5;                                  // 5 shot da ~6 s ciascuno
-const frameUrl = i => `frames/f_${String(i + 1).padStart(3, "0")}.webp`;
+const M = matchMedia("(max-width:760px)").matches;     // telefono: frame più leggeri, scroll più corto, menù a pagine
+const frameUrl = i => `${M ? "frames_m" : "frames"}/f_${String(i + 1).padStart(3, "0")}.webp`;
 
 const canvas = document.getElementById("seq");
 const ctx = canvas.getContext("2d");
@@ -399,9 +604,20 @@ function draw() {
   }
   if (!img) return;
   const cw = canvas.width, ch = canvas.height;
-  const s = Math.max(cw / img.naturalWidth, ch / img.naturalHeight);
+  // sul telefono il primo frame è "allargato" (zoom 0.62 del riempimento) perché l'insegna entri intera,
+  // poi torna a pieno schermo entro la prima tappa
+  const kz = Math.min(1, state.frame / (FRAMES / SHOTS * 0.9)), ez = kz * kz * (3 - 2 * kz);
+  const zoom = M ? 0.62 + 0.38 * ez : 1;
+  const s = Math.max(cw / img.naturalWidth, ch / img.naturalHeight) * zoom;
   const w = img.naturalWidth * s, h = img.naturalHeight * s;
-  ctx.drawImage(img, (cw - w) / 2, (ch - h) / 2, w, h);
+  if (zoom < 1) { ctx.fillStyle = "#140e0a"; ctx.fillRect(0, 0, cw, ch); }
+  // punto di fuoco orizzontale: sullo schermo stretto il primo frame inquadra l'insegna (a sinistra),
+  // poi la camera "scivola" verso il centro mentre ci si avvicina al portone
+  const k = Math.min(1, state.frame / (FRAMES / SHOTS * 1.1));
+  const fx = 0.17 + (0.5 - 0.17) * (k * k * (3 - 2 * k));
+  ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = "high";
+  const x = Math.min(0, Math.max(cw - w, cw / 2 - w * fx));
+  ctx.drawImage(img, x, (ch - h) / 2, w, h);
 }
 
 // carica prima un frame ogni 8 (scroll subito fluido), poi riempie i buchi
@@ -416,6 +632,8 @@ order.forEach((i, n) => {
     carica.textContent = loaded < FRAMES ? `${Math.round(loaded / FRAMES * 100)}%` : "";
     if (i === 0 || Math.abs(i - state.frame) < 8) draw();
   };
+  // ripiego: se i frame leggeri del telefono non ci sono, usa quelli standard
+  img.onerror = () => { if (M && !img.dataset.ripiego) { img.dataset.ripiego = "1"; img.src = `frames/f_${String(i + 1).padStart(3, "0")}.webp`; } };
   img.src = frameUrl(i);
   imgs[i] = img;
 });
@@ -427,12 +645,13 @@ resize();
    Unità di tempo: i frame occupano FDUR, il libro segue nella stessa timeline. */
 const FDUR = 7;                                   // durata (unità timeline) del piano sequenza
 const SLICE = FDUR / SHOTS;
+const TAPPE = ["Vicolo", "Sala", "Tavolate", "Arco", "Tavolo"];
 const shotOf = () => Math.min(SHOTS - 1, Math.floor(state.frame / (FRAMES / SHOTS)));
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const film = gsap.timeline({
   scrollTrigger: {
-    trigger: "#film", start: "top top", end: "+=1150%", pin: true,
+    trigger: "#film", start: "top top", end: M ? "+=520%" : "+=1150%", pin: true,
     scrub: 0.7,                                   // inerzia morbida, "steadicam"
     onUpdate: self => {
       const shot = shotOf();
@@ -489,9 +708,13 @@ const DISH_NAMES = {
 const SPREAD_WINDOWS = [null, ["apertura1", 2.4], ["apertura2", 1], null];   // (inizio, durata) di ogni apertura ferma
 
 const ready = Object.entries(DISH_MODELS).filter(([, url]) => url);
-if (ready.length) {
+const loadViewer = () => { if (document.getElementById("mv-lib")) return;
+  const sc = document.createElement("script"); sc.id = "mv-lib"; sc.type = "module";
+  sc.src = "https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js";
+  document.head.appendChild(sc); };
+if (ready.length && !M) {
   const sc = document.createElement("script");
-  sc.type = "module";
+  sc.id = "mv-lib"; sc.type = "module";
   sc.src = "https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js";
   document.head.appendChild(sc);
   document.getElementById("menu").classList.add("con-piatti");
@@ -541,8 +764,10 @@ film.set("#menu", { autoAlpha: 1 }, LIBRO)
     .fromTo("#menu .velo", { opacity: 0 }, { opacity: 1, duration: 0.6, ease: "none" }, LIBRO)
     .fromTo(".menu-titolo", { autoAlpha: 0, y: -16 }, { autoAlpha: 1, y: 0, duration: 0.5 }, LIBRO + 0.2)
     .to('.copy[data-shot="4"]', { autoAlpha: 0, x: 20, duration: 0.4 }, LIBRO)
-    .to(".percorso", { autoAlpha: 0.35, duration: 0.4 }, LIBRO)
-    .add(book, LIBRO + 0.1);
+    .to(".percorso", { autoAlpha: M ? 0 : 0.35, duration: 0.4 }, LIBRO);
+if (M) film.fromTo("#menu-m", { autoAlpha: 0, y: 40 }, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, LIBRO + 0.25)
+            .to({}, { duration: 1.4 });           // il menù resta fermo: lo si sfoglia col dito
+else film.add(book, LIBRO + 0.1);
 
 // tempo della timeline → posizione di scroll
 const timeToY = t => { const st = film.scrollTrigger; return st.start + (st.end - st.start) * (t / film.duration()); };
@@ -550,10 +775,13 @@ const timeToY = t => { const st = film.scrollTrigger; return st.start + (st.end 
 /* ===== 6. NAVIGAZIONE =================================================== */
 const barra = document.getElementById("barra");
 const burger = document.getElementById("burger");
+const topOf = id => document.getElementById(id).getBoundingClientRect().top + scrollY - barra.offsetHeight;
 const targets = {
   film: () => 0,
-  menu: () => timeToY(LIBRO + 0.1 + book.labels.apertura1 + 0.15),     // libro aperto sulla pag. 1
-  dove: () => document.getElementById("dove").getBoundingClientRect().top + scrollY - barra.offsetHeight
+  menu: () => M ? timeToY(LIBRO + 0.9) : timeToY(LIBRO + 0.1 + book.labels.apertura1 + 0.15),   // menù aperto
+  dove: () => topOf("dove"),
+  "chi-siamo": () => topOf("chi-siamo"),
+  sale: () => topOf("sale")
 };
 const vai = y => window.scrollTo({ top: y, behavior: reduce ? "auto" : "smooth" });
 document.querySelectorAll("[data-vai]").forEach(a => a.addEventListener("click", e => {
@@ -569,13 +797,45 @@ burger.addEventListener("click", () => {
 function aggiornaBarra() {
   const y = scrollY;
   barra.classList.toggle("piena", y > innerHeight * 0.6);
-  const cur = y >= targets.dove() - innerHeight * 0.4 ? "dove" : y >= timeToY(LIBRO) - 2 ? "menu" : "film";
+  const soglia = innerHeight * 0.4;
+  const cur = y >= targets.dove() - soglia ? "dove" : y >= targets.sale() - soglia ? "sale"
+            : y >= targets["chi-siamo"]() - soglia ? "chi-siamo" : y >= timeToY(LIBRO) - 2 ? "menu" : "film";
   document.querySelectorAll(".voci [data-vai]").forEach(a => a.setAttribute("aria-current", String(a.dataset.vai === cur)));
 }
 addEventListener("scroll", aggiornaBarra, { passive: true });
 ScrollTrigger.addEventListener("refresh", aggiornaBarra);
 aggiornaBarra();
 if (targets[location.hash.slice(1)]) addEventListener("load", () => scrollTo(0, targets[location.hash.slice(1)]()));
+
+/* ===== 6b. MENÙ NAVIGABILE ==============================================
+   Aperture: 0 copertina chiusa · 1 pag. 1 · 2 pagg. 2-3 · 3 pag. 4.
+   Linguette, frecce, click sulle pagine (destra = avanti, sinistra = indietro), tasti ← →. */
+const SPREAD_T = () => [0.75, book.labels.apertura1 + 0.15, book.labels.apertura2 + 0.15, book.labels.apertura3 + 0.15]
+  .map(t => LIBRO + 0.1 + t);
+const timeNow = () => film.scrollTrigger.progress * film.duration();
+const inMenu = () => timeNow() >= LIBRO - 0.05;
+function spreadNow() {
+  const t = timeNow(), T = SPREAD_T();
+  let idx = 0;
+  T.forEach((v, i) => { if (t >= v - 0.45) idx = i; });
+  return idx;
+}
+const goSpread = i => vai(timeToY(SPREAD_T()[Math.max(0, Math.min(3, i))]));
+document.querySelectorAll(".menu-nav .linguetta").forEach(b => b.addEventListener("click", () => goSpread(+b.dataset.spread)));
+document.querySelectorAll(".menu-nav .freccia").forEach(b => b.addEventListener("click", () => goSpread(spreadNow() + +b.dataset.dir)));
+document.getElementById("libro").addEventListener("click", e => {
+  const r = e.currentTarget.getBoundingClientRect();
+  goSpread(spreadNow() + (e.clientX > r.left + r.width / 2 ? 1 : -1));
+});
+function aggiornaMenuNav() {
+  const i = spreadNow();
+  document.querySelectorAll(".menu-nav .linguetta").forEach(b => b.setAttribute("aria-current", String(+b.dataset.spread === i)));
+  document.querySelector('.menu-nav [data-dir="-1"]').disabled = i <= 0;
+  document.querySelector('.menu-nav [data-dir="1"]').disabled = i >= 3;
+}
+addEventListener("scroll", aggiornaMenuNav, { passive: true });
+ScrollTrigger.addEventListener("refresh", aggiornaMenuNav);
+aggiornaMenuNav();
 
 /* ===== 7. PERCORSO CLICCABILE ==========================================
    Vicolo · Sala · Tavolate · Arco · Tavolo: ogni pulsante porta dentro il suo shot,
@@ -588,8 +848,94 @@ document.querySelectorAll(".percorso button").forEach(b => {
 addEventListener("keydown", e => {
   if (!["ArrowRight", "ArrowLeft"].includes(e.key) || e.target.closest("input,textarea,model-viewer")) return;
   if (!film.scrollTrigger.isActive) return;
-  const next = Math.max(0, Math.min(SHOTS - 1, shotOf() + (e.key === "ArrowRight" ? 1 : -1)));
-  vai(shotY(next));
+  const dir = e.key === "ArrowRight" ? 1 : -1;
+  if (inMenu() && !M) {                             // sul tavolo le frecce sfogliano il menù
+    const i = spreadNow() + dir;
+    if (i < 0) vai(shotY(SHOTS - 2)); else goSpread(i);
+  } else vai(shotY(Math.max(0, Math.min(SHOTS - 1, shotOf() + dir))));
   e.preventDefault();
 });
+
+/* ===== 8. TELEFONO: MENÙ A PAGINE + PIATTO 3D SU RICHIESTA ===============
+   Le righe vengono copiate dal libro (unica fonte del testo), raggruppate in 4 schede.
+   Swipe orizzontale nativo (scroll-snap); tap su una riga "3D" apre il piatto dal basso. */
+if (M) {
+  const fonti = ["#f2 > .faccia:not(.retro) .carta", "#f2 .retro .carta", "#f3 > .faccia:not(.retro) .carta", "#f3 .retro .carta"];
+  const gruppi = [];
+  fonti.forEach(sel => {
+    let g = null;
+    [...document.querySelector(sel).children].forEach(el => {
+      if (el.tagName === "H4") { g = []; gruppi.push(g); }
+      if (g && el.tagName !== "H3") g.push(el.cloneNode(true));
+    });
+  });
+  // gruppi: 0 Per iniziare · 1 Primi · 2 Secondi (+contorni) · 3 Per finire · 4… vini
+  const SCHEDE = [["Antipasti", [0]], ["Primi", [1]], ["Secondi e dolci", [2, 3]], ["Vini", gruppi.map((_, i) => i).filter(i => i >= 4)]];
+  const tabs = document.querySelector("#menu-m .schede-m"), pagine = document.getElementById("pagine");
+  SCHEDE.forEach(([nome, idx], n) => {
+    const pg = document.createElement("article");
+    pg.className = "pagina"; pg.setAttribute("aria-label", nome);
+    idx.forEach(i => gruppi[i].forEach(el => pg.appendChild(el)));
+    if (pg.querySelector("li[data-dish]")) pg.insertAdjacentHTML("beforeend", '<p class="suggerimento">Tocca un piatto con "3D" per vederlo da vicino.</p>');
+    pagine.appendChild(pg);
+    const b = document.createElement("button");
+    b.type = "button"; b.textContent = nome; b.setAttribute("role", "tab");
+    b.addEventListener("click", () => pagine.scrollTo({ left: pg.offsetLeft - pagine.offsetLeft - 16, behavior: reduce ? "auto" : "smooth" }));
+    tabs.appendChild(b);
+  });
+  const segnaScheda = () => {
+    const i = Math.round(pagine.scrollLeft / (pagine.clientWidth - 32 + 12));
+    [...tabs.children].forEach((b, k) => b.setAttribute("aria-current", String(k === i)));
+    tabs.children[i]?.scrollIntoView({ block: "nearest", inline: "nearest" });
+  };
+  pagine.addEventListener("scroll", () => requestAnimationFrame(segnaScheda), { passive: true });
+  segnaScheda();
+
+  const foglio = document.getElementById("foglio3d"), sfondo = document.getElementById("sfondo3d"), vista = document.getElementById("vista3d");
+  const apri = id => {
+    if (!DISH_MODELS[id]) return;
+    loadViewer();
+    document.getElementById("foglio3d-t").textContent = DISH_NAMES[id];
+    vista.innerHTML = `<model-viewer src="${DISH_MODELS[id]}" alt="${DISH_NAMES[id]} in 3D" camera-orbit="0deg 62deg 105%" field-of-view="28deg"
+      auto-rotate rotation-per-second="14deg" camera-controls disable-pan environment-image="neutral" exposure="1.15" tone-mapping="aces"
+      shadow-intensity="1.1"></model-viewer>`;
+    foglio.classList.add("aperto"); sfondo.classList.add("aperto"); foglio.setAttribute("aria-hidden", "false");
+    document.getElementById("chiudi3d").focus();
+  };
+  const chiudi = () => { foglio.classList.remove("aperto"); sfondo.classList.remove("aperto"); foglio.setAttribute("aria-hidden", "true"); vista.innerHTML = ""; };
+  pagine.addEventListener("click", e => { const li = e.target.closest("li[data-dish]"); if (li) apri(li.dataset.dish); });
+  document.getElementById("chiudi3d").addEventListener("click", chiudi);
+  sfondo.addEventListener("click", chiudi);
+  addEventListener("keydown", e => { if (e.key === "Escape") chiudi(); });
+}
+
+/* ===== 9. GALLERIA: foto a tutto schermo ================================ */
+const lente = document.getElementById("lente");
+document.querySelectorAll(".galleria button").forEach(b => b.addEventListener("click", () => {
+  const img = lente.querySelector("img");
+  img.src = b.dataset.big; img.alt = b.querySelector("img").alt;
+  lente.showModal();
+}));
+lente.addEventListener("click", e => { if (e.target === lente || e.target.classList.contains("chiudi-lente")) lente.close(); });
+
+/* ===== 10. TELEFONO: TASTI ‹ › PER LE TAPPE ============================
+   Vicolo · Sala · Tavolate · Arco · Tavolo · Menù (poi "Dove siamo"). */
+if (M) {
+  const indietro = document.getElementById("passo-indietro"), avanti = document.getElementById("passo-avanti");
+  const tappaOra = () => inMenu() ? SHOTS : shotOf();              // 0-4 shot, 5 = menù
+  const vaiTappa = n => n >= SHOTS + 1 ? vai(targets.dove()) : n === SHOTS ? vai(targets.menu()) : vai(shotY(Math.max(0, n)));
+  indietro.addEventListener("click", () => vaiTappa(tappaOra() - 1));
+  avanti.addEventListener("click", () => vaiTappa(tappaOra() + 1));
+  const aggiornaPassi = () => {
+    const t = tappaOra();
+    indietro.disabled = t === 0 && scrollY < 4;
+    avanti.setAttribute("aria-label", t === SHOTS ? "Vai a Dove siamo" : t === SHOTS - 1 ? "Apri il menù" : "Tappa successiva");
+    document.getElementById("tappa-ora").textContent = t === SHOTS ? "Menù" : TAPPE[t];
+    const fuori = !film.scrollTrigger.isActive && scrollY > 10;     // oltre il piano sequenza: nascondi i tasti
+    indietro.style.visibility = avanti.style.visibility = fuori ? "hidden" : "visible";
+  };
+  addEventListener("scroll", aggiornaPassi, { passive: true });
+  ScrollTrigger.addEventListener("refresh", aggiornaPassi);
+  aggiornaPassi();
+}
 </script>
