@@ -622,19 +622,29 @@ function draw() {
   const cw = canvas.width, ch = canvas.height;
   // sul telefono il primo frame è "allargato" (zoom 0.62 del riempimento) perché l'insegna entri intera,
   // poi torna a pieno schermo entro la prima tappa
-  const kz = Math.min(1, state.frame / (FRAMES / SHOTS * 0.9)), ez = kz * kz * (3 - 2 * kz);
-  const zoom = M ? 0.62 + 0.38 * ez : 1;
-  const s = Math.max(cw / img.naturalWidth, ch / img.naturalHeight) * zoom;
-  const w = img.naturalWidth * s, h = img.naturalHeight * s;
-  if (zoom < 1) { ctx.fillStyle = "#140e0a"; ctx.fillRect(0, 0, cw, ch); }
+  const sm = t => t * t * (3 - 2 * t);
+  const zoomAt = f => M ? 0.62 + 0.38 * sm(Math.min(1, f / (FRAMES / SHOTS * 0.9))) : 1;
   // punto di fuoco orizzontale: sullo schermo stretto il primo frame inquadra l'insegna (a sinistra),
   // poi la camera "scivola" verso il centro mentre ci si avvicina al portone
-  const k = Math.min(1, state.frame / (FRAMES / SHOTS * 1.1));
-  const fx = 0.17 + (0.5 - 0.17) * (k * k * (3 - 2 * k));
+  const fxAt = f => 0.17 + (0.5 - 0.17) * sm(Math.min(1, f / (FRAMES / SHOTS * 1.1)));
+  // tutto in coordinate del video sorgente (1920×1080)
+  const zoom = zoomAt(state.frame);
+  let s = Math.max(cw / SRC_W, ch / SRC_H) * zoom;              // px sorgente -> px canvas
+  // frames_m: ogni file è una striscia verticale a piena altezza (1080) ritagliata attorno al punto di fuoco
+  const idx = imgs.indexOf(img);
+  let L = 0, srcW = img.naturalWidth * SRC_H / img.naturalHeight;
+  if (srcW < SRC_W - 2) {
+    const wc = Math.min(SRC_W, Math.ceil(SRC_H * CROP_A / zoomAt(idx) / 2) * 2);
+    L = Math.round(Math.min(Math.max(fxAt(idx) * SRC_W - wc / 2, 0), SRC_W - wc));
+    s = Math.max(s, cw / srcW);                                // schermo più largo della striscia: riempi
+  }
+  const half = cw / (2 * s);
+  const cx = Math.min(Math.max(fxAt(state.frame) * SRC_W, L + half), L + srcW - half);
+  if (M) { ctx.fillStyle = "#140e0a"; ctx.fillRect(0, 0, cw, ch); }
   ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = "high";
-  const x = Math.min(0, Math.max(cw - w, cw / 2 - w * fx));
-  ctx.drawImage(img, x, (ch - h) / 2, w, h);
+  ctx.drawImage(img, cw / 2 + (L - cx) * s, (ch - SRC_H * s) / 2, srcW * s, SRC_H * s);
 }
+const SRC_W = 1920, SRC_H = 1080, CROP_A = 0.62;   // CROP_A: rapporto larghezza/altezza coperto dai frames_m
 
 // carica prima un frame ogni 8 (scroll subito fluido), poi riempie i buchi
 const order = [];
