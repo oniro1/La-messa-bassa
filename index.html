@@ -235,6 +235,18 @@ a{color:var(--brace)}
 .piede a{color:var(--fumo);text-decoration:none}
 .piede a:hover{color:var(--brace)}
 @media (max-width:760px){ .dove-in{grid-template-columns:1fr} }
+/* dettagli rossi (Higgsfield): sigillo in ceralacca, filetto, fregi d'angolo */
+.chi-foto{position:relative}
+.chi-foto .sigillo{aspect-ratio:auto;object-fit:contain;box-shadow:none;border-radius:0;position:absolute;right:-28px;bottom:-34px;width:clamp(92px,11vw,132px);height:auto;transform:rotate(-8deg);filter:drop-shadow(0 10px 14px rgba(0,0,0,.55));pointer-events:none}
+.filetto{display:block;width:min(420px,72vw);height:auto;margin:0 auto;padding-block:clamp(8px,3vh,28px);opacity:.9;background:var(--notte);box-sizing:content-box;padding-inline:calc((100% - min(420px,72vw))/2)}
+.filetto + .sez,.filetto + .dove{padding-top:clamp(24px,5vh,48px)}
+.schede{position:relative}
+.schede::before,.schede::after{content:"";position:absolute;width:64px;height:64px;background:url(assets/angolo.webp) no-repeat 0 0/contain;pointer-events:none;z-index:1}
+.schede::before{top:-10px;left:-10px}
+.schede::after{bottom:-10px;right:-10px;transform:rotate(180deg)}
+.piede .firma{display:inline-flex;align-items:center;gap:.7rem}
+.piede .firma img{width:34px;height:auto;filter:drop-shadow(0 3px 5px rgba(0,0,0,.5))}
+@media (max-width:760px){ .chi-foto .sigillo{right:-6px;bottom:-26px;width:84px} }
 
 /* ---------- ELEMENTI SOLO TELEFONO (nascosti su desktop) ---------- */
 .barra-m,.menu-m,.tappa-ora,.salta-video,.passo-m{display:none}
@@ -487,7 +499,7 @@ a{color:var(--brace)}
 <!-- 3. CHI SIAMO ---------------------------------------------------------- -->
 <section class="sez chi" id="chi-siamo" aria-labelledby="chi-t">
   <div class="sez-in chi-in">
-    <figure class="chi-foto"><img src="foto/insegna_s.webp" alt="L'insegna in legno de La Messa Bassa sopra il portone, in Via del Castello" loading="lazy" width="405" height="720"></figure>
+    <figure class="chi-foto"><img src="foto/insegna_s.webp" alt="L'insegna in legno de La Messa Bassa sopra il portone, in Via del Castello" loading="lazy" width="405" height="720"><img class="sigillo" src="assets/sigillo.webp" alt="" aria-hidden="true" loading="lazy" width="360" height="420"></figure>
     <div class="chi-testo">
       <span class="occhiello">Chi siamo</span>
       <h2 id="chi-t">Una trattoria nel borgo di Pisoniano</h2>
@@ -501,6 +513,8 @@ a{color:var(--brace)}
     </div>
   </div>
 </section>
+
+<img class="filetto" src="assets/filetto.webp" alt="" aria-hidden="true" loading="lazy" width="900" height="156">
 
 <!-- 4. LE SALE (foto reali del locale) -------------------------------------- -->
 <section class="sez sale" id="sale" aria-labelledby="sale-t">
@@ -519,6 +533,8 @@ a{color:var(--brace)}
   </div>
   <dialog class="lente" id="lente"><img alt=""><button type="button" class="chiudi-lente" aria-label="Chiudi foto">Chiudi</button></dialog>
 </section>
+
+<img class="filetto" src="assets/filetto.webp" alt="" aria-hidden="true" loading="lazy" width="900" height="156">
 
 <!-- 5. DOVE SIAMO --------------------------------------------------------- -->
 <section class="dove" id="dove" aria-labelledby="dove-t">
@@ -543,7 +559,7 @@ a{color:var(--brace)}
 </main>
 
 <footer class="piede">
-  <span>© 2026 La Messa Bassa · Via del Castello, 28 · Pisoniano (RM)</span>
+  <span class="firma"><img src="assets/sigillo.webp" alt="" aria-hidden="true" loading="lazy" width="360" height="420">© 2026 La Messa Bassa · Via del Castello, 28 · Pisoniano (RM)</span>
   <!-- P.IVA: obbligatoria per legge su un sito commerciale, da chiedere al cliente -->
   <nav aria-label="Secondaria">
     <a href="#film" data-vai="film">Il locale</a>
